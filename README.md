@@ -1,0 +1,10262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Inventario - Inmobiliaria L3</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+/* Estilos para el modal de fotos */
+.photo-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    text-align: center;
+}
+
+.modal-content {
+    max-width: 90%;
+    max-height: 80%;
+    margin: auto;
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.close-modal {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    color: white;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.close-modal:hover {
+    color: #e74c3c;
+}
+
+.prev, .next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    font-size: 30px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 16px;
+    user-select: none;
+}
+
+.prev {
+    left: 30px;
+}
+
+.next {
+    right: 30px;
+}
+
+.prev:hover, .next:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 50%;
+}
+
+/* Estilos para la galería de fotos */
+.photo-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.thumb {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: transform 0.2s;
+}
+
+.thumb:hover {
+    transform: scale(1.05);
+}
+
+.photo-section {
+    margin-top: 30px;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.btn-add-photo {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.3s;
+}
+
+.btn-add-photo:hover {
+    background: #c0392b;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.9);
+    text-align: center;
+}
+
+.close, .prev, .next {
+    position: absolute;
+    top: 50%;
+    font-size: 2em;
+    color: white;
+    cursor: pointer;
+    user-select: none;
+}
+
+.close {
+    top: 20px;
+    right: 35px;
+    font-size: 2.5em;
+}
+
+.prev { left: 10%; }
+.next { right: 10%; }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+/* Encabezados */
+th {
+    background: #007acc;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+}
+/* Celdas */
+td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    vertical-align: top;
+}
+/* Radio groups */
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+.radio-option {
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+}
+/* Inputs */
+input[type="number"] {
+    width: 60px;
+    text-align: center;
+    padding: 4px;
+}
+textarea {
+    width: 100%;
+    min-height: 40px;
+    resize: vertical;
+    padding: 4px;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+}
+/* Filas alternadas */
+tr:nth-child(even) {
+    background: #f9f9f9;
+}
+/* Reset y body */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 20px;
+    min-height: 100vh;
+}
+/* Container */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+/* Header */
+header {
+    background: linear-gradient(135deg, #2c3e50 0%, #1a2530 100%);
+    color: white;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+}
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.logo {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+.logo span {
+    color: #4ecdc4;
+}
+.info-header {
+    display: flex;
+    justify-content: space-between;
+    background: #ecf0f1;
+    padding: 15px 20px;
+    border-bottom: 1px solid #bdc3c7;
+    flex-wrap: wrap;
+}
+.info-item {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+    margin-bottom: 10px;
+}
+.info-item i {
+    margin-right: 8px;
+    color: #2c3e50;
+}
+/* Form section */
+.form-section {
+    padding: 20px;
+    border-bottom: 1px solid #ecf0f1;
+}
+h2 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #3498db;
+    display: flex;
+    align-items: center;
+}
+h2 i {
+    margin-right: 10px;
+}
+/* Form columns */
+.form-columns {
+    display: flex;
+    gap: 30px;
+    width: 100%;
+}
+.form-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.form-control {
+    margin-bottom: 15px;
+}
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #34495e;
+}
+input[type="text"], input[type="date"], select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #bdc3c7;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: all 0.3s;
+}
+input[type="text"]:focus, select:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+/* Inventory section */
+.inventory-section {
+    padding: 20px;
+}
+.section-title {
+    background: linear-gradient(135deg, #3498db 0%, #2c79bb 100%);
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s;
+}
+.section-title:hover {
+    background: linear-gradient(135deg, #2c79bb 0%, #3498db 100%);
+}
+.section-content {
+    display: none;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: 4px solid #3498db;
+}
+/* Inventory table */
+.inventory-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 50px;
+}
+.inventory-table th {
+    background: #2c3e50;
+    color: white;
+    padding: 12px;
+    text-align: left;
+}
+.inventory-table td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    vertical-align: top;
+}
+.inventory-table tr:nth-child(even) {
+    background: #f2f2f2;
+}
+/* Column widths */
+.element-name {
+    width: 10%;
+    font-weight: 600;
+    color: #2c3e50;
+}
+.status-options {
+    width: 15%;
+    text-align: left;
+    padding: 0 5px;
+}
+.quantity {
+    width: 6%;
+    text-align: center;
+    padding: 0 5px;
+}
+.observation-field {
+    width: 22%;
+}
+/* Radio specifics */
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    justify-content: center;
+    align-items: center;
+}
+.radio-option {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    margin-right: 0;
+    font-size: 12px;
+    justify-content: flex-start;
+    white-space: nowrap;
+}
+.radio-option input[type="radio"] {
+    accent-color: #3498db;
+}
+.quantity input {
+    width: 90%;
+    padding: 4px;
+    text-align: center;
+    margin: 0 auto;
+}
+.observation-input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #bdc3c7;
+    border-radius: 6px;
+    font-size: 14px;
+    min-height: 80px;
+    resize: vertical;
+    transition: border-color 0.3s;
+}
+.observation-input:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+/* Photo gallery */
+.photo-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+}
+.photo-item {
+    width: 100px;
+    height: 100px;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.photo-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.photo-item .delete-photo {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: rgba(231, 76, 60, 0.8);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 12px;
+}
+/* Progress */
+.progress-bar {
+    height: 8px;
+    background: #ecf0f1;
+    border-radius: 4px;
+    margin: 20px 0;
+    overflow: hidden;
+}
+.progress {
+    height: 100%;
+    background: linear-gradient(135deg, #3498db 0%, #2c79bb 100%);
+    border-radius: 4px;
+    width: 0%;
+    transition: width 0.5s;
+}
+.progress-text {
+    text-align: center;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+/* Actions top */
+.actions-top {
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px 20px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #ddd;
+}
+.btn-print {
+    background: #2c3e50;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background 0.3s;
+}
+.btn-print:hover {
+    background: #1a2530;
+}
+/* Spacing */
+.inventory-section > p {
+    margin-bottom: 60px;
+    display: block;
+    line-height: 1.6;
+    font-size: 16px;
+    color: #555;
+}
+/* Responsive */
+@media (max-width: 768px) {
+    .form-columns {
+        flex-direction: column;
+        gap: 15px;
+    }
+    .radio-group {
+        flex-direction: column;
+        gap: 8px;
+    }
+    .element-name, .status-options, .observation-field {
+        width: 100%;
+        display: block;
+    }
+    .inventory-table, .inventory-table tbody, .inventory-table tr, .inventory-table td {
+        display: block;
+        width: 100%;
+    }
+    .inventory-table td {
+        padding: 10px;
+    }
+    .inventory-table tr {
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .inventory-table th {
+        display: none;
+    }
+    .info-header {
+        flex-direction: column;
+    }
+    .info-item {
+        margin-bottom: 10px;
+    }
+    .header-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    .company-logo {
+        margin-bottom: 15px;
+    }
+    .inventory-table th:nth-child(3), .inventory-table td:nth-child(3), .inventory-table th:nth-child(5), .inventory-table td:nth-child(5), .inventory-table th:nth-child(6), .inventory-table td:nth-child(6) {
+        display: none;
+    }
+    .inventory-table th, .inventory-table td {
+        padding: 6px 8px;
+    }
+    .observation-input {
+        min-height: 60px;
+        padding: 6px;
+    }
+}
+/* Overrides finales */
+.status-options {
+    text-align: left !important;
+}
+.radio-group {
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+}
+.radio-option {
+    justify-content: flex-start !important;
+}
+
+/* Reglas específicas para impresión (PDF) */
+@media print {
+    /* Fuerza visibilidad de todas las columnas de la tabla, overrideando responsivo */
+    .inventory-table th:nth-child(3),
+    .inventory-table td:nth-child(3),
+    .inventory-table th:nth-child(5),
+    .inventory-table td:nth-child(5),
+    .inventory-table th:nth-child(6),
+    .inventory-table td:nth-child(6) {
+        display: table-cell !important; /* Fuerza mostrar columnas ocultas en móvil */
+    }
+
+
+    
+    /* Asegura que toda la tabla sea visible y no se corte */
+    .inventory-table {
+        width: 100% !important;
+        font-size: 10px !important; /* Reduce fuente para caber más */
+        page-break-inside: avoid; /* Evita cortes en medio de filas */
+    }
+    
+    .inventory-table th, .inventory-table td {
+        padding: 4px !important; /* Reduce padding para espacio */
+    }
+    
+    /* Fuerza expansión de secciones colapsables (si no están expandidas) */
+    .section-content {
+        display: block !important; /* Muestra secciones ocultas */
+    }
+    
+    /* Ajusta radios y inputs para impresión */
+    .radio-group, .quantity input, .observation-input {
+        font-size: 9px !important;
+    }
+    
+    /* Oculta elementos no necesarios en PDF (ej. botones) */
+    .btn-print, .btn-add-photo, .actions-top {
+        display: none !important;
+    }
+    
+    /* Asegura colores en blanco y negro */
+    * {
+        color: black !important;
+        background: white !important;
+    }
+    
+    /* Ajusta layout general para impresión */
+    body {
+        margin: 0;
+        padding: 10px;
+    }
+    
+    .container {
+        max-width: none;
+        box-shadow: none;
+    }
+}
+
+</style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1>📋 INVENTARIO DE INMUEBLE ARRENDADO</h1>
+                <img src="inmobiliaria.png" alt="Logo Inmobiliaria L3" class="company-logo" style="height: 60px;">
+            </div>
+        </header>
+        
+        <div class="actions-top">
+            <button class="btn-print" onclick="printInventory()">
+                <i class="fas fa-print"></i> Imprimir
+            </button>
+        </div>
+        
+        <div class="info-header">
+            <div class="info-item">
+                <i class="fas fa-user"></i>
+                <strong>Agente:</strong> 
+                <input type="text" id="agent-name" placeholder="Nombre del agente" value="">
+            </div>
+            <div class="info-item">
+                <i class="fas fa-calendar"></i>
+                <strong>Fecha:</strong> 
+                <input type="date" id="current-date" value="2023-09-05">
+            </div>
+            <div class="info-item">
+    <i class="fas fa-key"></i>
+    <strong># de contrato:</strong> 
+    <input type="text" id="inventory-id" placeholder="Ingrese número de contrato">
+</div>
+        </div>
+        
+        
+        
+        <div class="form-section">
+            <h2><i class="fas fa-home"></i> Datos del Inmueble y Arrendador</h2>
+            
+            <div class="form-columns">
+                <!-- Columna izquierda -->
+                <div class="form-column">
+                    <div class="form-control">
+                        <label for="tenant-name">Nombre arrendatario</label>
+                        <input type="text" id="tenant-name" placeholder="Ingrese nombre completo" required>
+                    </div>
+                    
+                    <div class="form-control">
+                        <label for="citizen-id">Cédula de ciudadanía</label>
+                        <input type="text" id="citizen-id" placeholder="Número de documento" required>
+                    </div>
+                    
+                    <div class="form-control">
+                        <label for="phone-number">Celular</label>
+                        <input type="text" id="phone-number" placeholder="Agregue número de contacto" required>
+                    </div>
+                    
+                    <div class="form-control">
+                        <label for="delivery-date">Fecha de entrega de inmueble</label>
+                        <input type="date" id="delivery-date">
+                    </div>
+                    <div class="form-control">
+                        <label for="landlord-name">Nombre de arrendador</label>
+                        <input type="text" id="landlord-name" placeholder="Agregue nombre de arrendador">
+                    </div>
+                </div>
+                
+                <!-- Columna derecha -->
+                <div class="form-column">
+                    <div class="form-control">
+                        <label for="property-address">Dirección</label>
+                        <input type="text" id="property-address" placeholder="Agregue la dirección">
+                    </div>
+                    
+                    <div class="form-control">
+                        <label for="property-type">Tipo de Propiedad:</label>
+                        <select id="property-type">
+                            <option value="">Seleccione el tipo</option>
+                            <option value="casa">Casa</option>
+                            <option value="apartamento">Apartamento</option>
+                            <option value="apartaestudio">Apartaestudio</option>
+                            <option value="local">Local Comercial</option>
+                            <option value="oficina">Oficina</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-control">
+                        <label for="property-detail-type">Tipo de inmueble</label>
+                        <input type="text" id="property-detail-type" placeholder="Agregue tipo de inmueble">
+                    </div>
+                    
+                    <div class="form-control">
+                        <label for="return-date">Fecha de restitución del inmueble</label>
+                        <input type="date" id="return-date">
+                    </div>
+                    
+                    
+                </div>
+            </div>
+        </div>
+        
+        <div class="inventory-section">
+            <h2><i class="fas fa-clipboard-list"></i> INVENTARIO DETALLADO POR AMBIENTES</h2>
+            
+            <p>Haz clic en cada sección para desplegarla. Califica cada elemento y añade observaciones.</p>
+            
+            <div class="section-title" onclick="toggleSection('main-door')">
+                <h3><i class="fas fa-door-open"></i> ENTRADA PRINCIPAL</h3>
+                <span>+</span>
+            </div>
+            <div id="main-door" class="section-content">
+                <table class="inventory-table">
+                    <thead>
+                        <tr>
+                            <th class="element-name">ELEMENTO</th>
+                            <th class="status-options">ESTADO DE ENTREGA</th>
+                            <th class="quantity">CANTIDAD</th>
+                            <th class="observation-field">OBSERVACIONES</th>
+                            <th class="status-options">ESTADO DE RESTITUCIÓN</th>
+                            <th class="quantity">CANTIDAD</th>
+                            <th class="observation-field">OBSERVACIONES</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="element-name">MARCO DE LA PUERTA</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="main-door-frame-delivery" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="main-door-frame-delivery" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="main-door-frame-delivery" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="main-door-frames-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="main-door-frames-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="main-door-frames-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">PUERTA PRINCIPAL</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-door-frame-delivery" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-door-frame-delivery" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-door-frame-delivery" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-door-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-door-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-door-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">CERRADURA PUERTA</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-frame-delivery" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-frame-delivery" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-frame-delivery" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">VENTANAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-window" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-window" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-window" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-window-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-window-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-window-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">VIDRIOS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-glasess" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-glasess" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-glasess" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-glasess-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-glasess-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-glasess-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">REJAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-bars" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-bars" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-bars" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-bars-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-bars-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-bars-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">PISOS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-flats" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-flats" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-flats" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-flats-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-flats-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-flats-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">GUARDA ESCOBAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-guard" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-guard" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-guard" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-guard-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-guard-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-guard-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">PAREDES</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-walls" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-walls" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-walls" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-walls-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-walls-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-walls-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">TECHOS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-roofs" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-roofs" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-roofs" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-roofs-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-roofs-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-roofs-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">ROSETAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-rossetes" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-rossetes" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-rossetes" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-rossetes-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-rossetes-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-rossetes-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td class="element-name">INTERRUPTORES</td>
+                <td class="status-options">
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="switches-delivery" value="good"> BUENO
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="switches-delivery" value="regular"> REGULAR
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="switches-delivery" value="bad"> MALO
+                        </label>
+                    </div>
+                </td>
+                <td class="quantity">
+                    <input type="number" min="0" value="1" style="width: 60px;">
+                </td>
+                <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación entrega..."></textarea>
+                </td>
+                <td class="status-options">
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="switches-return" value="good"> BUENO
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="switches-return" value="regular"> REGULAR
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="switches-return" value="bad"> MALO
+                        </label>
+                    </div>
+                </td>
+                <td class="quantity">
+                    <input type="number" min="0" value="1" style="width: 60px;">
+                </td>
+                <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td class="element-name">TOMAS ELECTRICAS</td>
+                <td class="status-options">
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="glass-delivery" value="good"> BUENO
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="glass-delivery" value="regular"> REGULAR
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="glass-delivery" value="bad"> MALO
+                        </label>
+                    </div>
+                </td>
+                <td class="quantity">
+                    <input type="number" min="0" value="5" style="width: 60px;">
+                </td>
+                <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación entrega..."></textarea>
+                </td>
+                <td class="status-options">
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="glass-return" value="good"> BUENO
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="glass-return" value="regular"> REGULAR
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="glass-return" value="bad"> MALO
+                        </label>
+                    </div>
+                </td>
+                <td class="quantity">
+                    <input type="number" min="0" value="5" style="width: 60px;">
+                </td>
+                <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">LAMPARAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-lamps" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-lamps" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-lamps" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-lamps-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-lamps-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-lamps-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">RIELES</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-rails" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-rails" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-rails" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-rails-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-rails-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-rails-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+<tr>
+                            <td class="element-name">CORTINAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-curtains" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-curtains" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-curtains" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-curtains-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-curtains-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-curtains-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">LLAVES</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-keys" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-keys" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-keys" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-keys-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-keys-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-keys-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">OTROS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-others" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-others" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-others" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-others-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-others-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-others-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+                    </tbody>
+    </table>
+
+    <!-- Botón y galería para fotos -->
+<div class="photo-section">
+  <button class="btn-add-photo" onclick="document.getElementById('fileInput-main-door').click()">
+    <i class="fas fa-camera"></i> Añadir Fotos Entrada Principal
+  </button>
+  <input type="file" id="fileInput-main-door" accept="image/*" multiple style="display:none"
+         onchange="previewPhotos(event, 'main-door')">
+
+  <div class="photo-gallery" id="main-door-gallery"></div>
+</div>
+</div>
+
+                                
+
+
+
+            
+            <div class="section-title" onclick="toggleSection('living-room')">
+                <h3><i class="fas fa-couch"></i> SALA-COMEDOR</h3>
+                <span>+</span>
+            </div>
+            <div id="living-room" class="section-content">
+                <table class="inventory-table">
+                    <thead>
+                        <tr>
+                            <th class="element-name">ELEMENTO</th>
+                            <th class="status-options">ESTADO DE ENTREGA</th>
+                            <th class="quantity">CANTIDAD</th>
+                            <th class="observation-field">OBSERVACIONES</th>
+                            <th class="status-options">ESTADO DE RESTITUCIÓN</th>
+                            <th class="quantity">CANTIDAD</th>
+                            <th class="observation-field">OBSERVACIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="element-name">MARCO DE LA PUERTA</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">PUERTA PRINCIPAL</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-fram" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-fram" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-fram" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-fram-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-fram-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-fram-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">CERRADURA PUERTA</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-frae" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-frae" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-frae" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-frae-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-frae-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-frae-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">LLAVES</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dor-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dor-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dor-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dor-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dor-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dor-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">VENTANAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoor-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoor-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoor-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoor-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoor-frame-return" value="regular"> RREGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoor-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">VIDRIOS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dosor-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dosor-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dosor-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dosor-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dosor-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dosor-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">CORTINAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doohr-curtains" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doohr-curtains" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doohr-curtains" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doohr-curtains-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doohr-curtains-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doohr-curtains-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">RIELES</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dqoor-curtains" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dqoor-curtains" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dqoor-curtains" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dqoor-curtains-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dqoor-curtains-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dqoor-curtains-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">REJAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doogr-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doogr-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doogr-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doogr-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doogr-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doogr-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">PISOS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="djoor-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="djoor-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="djoor-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="djoor-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="djoor-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="djoor-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">PAREDES</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdoor-framle" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdoor-framle" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdoor-framle" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdoor-framle-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdoor-framle-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdoor-framle-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">TECHOS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="xdoor-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="xdoor-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="xdoor-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="xdoor-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="xdoor-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="xdoor-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">PINTURA</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="cdoor-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="cdoor-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="cdoor-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="cdoor-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="cdoor-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="cdoor-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">GUARDA ESCOBAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doonr-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doonr-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doonr-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doonr-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doonr-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doonr-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td class="element-name">TOMAS ELECTRICAS</td>
+                <td class="status-options">
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="gls-delivery" value="good"> BUENO
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="gls-delivery" value="regular"> REGULAR
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="gls-delivery" value="bad"> MALO
+                        </label>
+                    </div>
+                </td>
+                <td class="quantity">
+                    <input type="number" min="0" value="5" style="width: 60px;">
+                </td>
+                <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación entrega..."></textarea>
+                </td>
+                <td class="status-options">
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="gls-return" value="good"> BUENO
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="gls-return" value="regular"> REGULAR
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="gls-return" value="bad"> MALO
+                        </label>
+                    </div>
+                </td>
+                <td class="quantity">
+                    <input type="number" min="0" value="5" style="width: 60px;">
+                </td>
+                <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td class="element-name">INTERRUPTORES</td>
+                <td class="status-options">
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="loks-delivery" value="good"> BUENO
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="loks-delivery" value="regular"> REGULAR
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="loks-delivery" value="bad"> MALO
+                        </label>
+                    </div>
+                </td>
+                <td class="quantity">
+                    <input type="number" min="0" value="1" style="width: 60px;">
+                </td>
+                <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación entrega..."></textarea>
+                </td>
+                <td class="status-options">
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="loks-return" value="good"> BUENO
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="loks-return" value="regular"> REGULAR
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="loks-return" value="bad"> MALO
+                        </label>
+                    </div>
+                </td>
+                <td class="quantity">
+                    <input type="number" min="0" value="1" style="width: 60px;">
+                </td>
+                <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">ROSETAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-frajme" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-frajme" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-frajme" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-frajme-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-frajme-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-frajme-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            
+            
+            <tr>
+                            <td class="element-name">LAMPARAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtoor-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtoor-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtoor-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtoor-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtoor-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtoor-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">MUEBLES</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doorf-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doorf-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doorf-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doorf-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doorf-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doorf-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+<tr>
+                            <td class="element-name">ENTREPAÑOS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-fdrame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-fdrame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-fdrame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-fdrame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-fdrame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-fdrame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">CAJA DE FUCIBLES</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dobor-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dobor-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dobor-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dobor-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dobor-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dobor-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">OTROS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doorm-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doorm-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doorm-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doorm-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doorm-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doorm-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+
+                    </tbody>
+                </table>
+
+                <!-- Botón y galería para fotos -->
+<div class="photo-section">
+  <button class="btn-add-photo" onclick="document.getElementById('fileInput-dining-room').click()">
+    <i class="fas fa-camera"></i> Añadir Fotos SALA-COMEDOR
+  </button>
+  <input type="file" id="fileInput-dining-room" accept="image/*" multiple style="display:none"
+         onchange="previewPhotos(event, 'dining-room')">
+
+  <div class="photo-gallery" id="dining-room-gallery"></div>
+</div>
+</div>
+
+
+            
+                <div class="section-title" onclick="toggleSection('kitchen')">
+                    <h3><i class="fas fa-utensils"></i> COCINA</h3>
+                    <span>+</span>
+                </div>
+                <div id="kitchen" class="section-content">
+                    <table class="inventory-table">
+                        <thead>
+                            <tr>
+                                <th class="element-name">ELEMENTO</th>
+                                <th class="status-options">ESTADO DE ENTREGA</th>
+                                <th class="quantity">CANTIDAD</th>
+                                <th class="observation-field">OBSERVACIONES</th>
+                                <th class="status-options">ESTADO DE RESTITUCIÓN</th>
+                                <th class="quantity">CANTIDAD</th>
+                                <th class="observation-field">OBSERVACIONES</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="element-name">MARCO DE LA PUERTA</td>
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="ain-door-frame-return" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="ain-door-frame-return" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="ain-door-frame-return" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+                                <td class="quantity">
+                                     <input type="number" min="0" value="1" style="width: 60px;">
+                                 </td>
+                                <td class="observation-field">
+                                    <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                                </td>
+
+                                
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="door-frame-return" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="door-frame-return" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="door-frame-return" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+
+
+                                <td class="quantity">
+                                    <input type="number" min="0" value="1" style="width: 60px;">
+                                </td>
+                                <td class="observation-field">
+                        <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                    </td>
+                </tr>
+                <tr>
+                                <td class="element-name">PUERTA PRINCIPAL</td>
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="wdoor-frame" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="wdoor-frame" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="wdoor-frame" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+                                <td class="quantity">
+                                     <input type="number" min="0" value="1" style="width: 60px;">
+                                 </td>
+                                <td class="observation-field">
+                                    <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                                </td>
+
+                                
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="wdoor-frame-return" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="wdoor-frame-return" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="wdoor-frame-return" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+
+
+                                <td class="quantity">
+                                    <input type="number" min="0" value="1" style="width: 60px;">
+                                </td>
+                                <td class="observation-field">
+                        <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                    </td>
+                </tr>
+                <tr>
+                                <td class="element-name">CERRADURA PUERTA</td>
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="rdoor-frame" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="rdoor-frame" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="rdoor-frame" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+                                <td class="quantity">
+                                     <input type="number" min="0" value="1" style="width: 60px;">
+                                 </td>
+                                <td class="observation-field">
+                                    <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                                </td>
+
+                                
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="rdoor-frame-return" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="rdoor-frame-return" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="rdoor-frame-return" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+
+
+                                <td class="quantity">
+                                    <input type="number" min="0" value="1" style="width: 60px;">
+                                </td>
+                                <td class="observation-field">
+                        <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                    </td>
+                </tr>
+                <tr>
+                                <td class="element-name">VENTANAS</td>
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="tdoor-frame" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="tdoor-frame" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="tdoor-frame" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+                                <td class="quantity">
+                                     <input type="number" min="0" value="1" style="width: 60px;">
+                                 </td>
+                                <td class="observation-field">
+                                    <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                                </td>
+
+                                
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="tdoor-frame-return" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="tdoor-frame-return" value="regular"> RREGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="tdoor-frame-return" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+
+
+                                <td class="quantity">
+                                    <input type="number" min="0" value="1" style="width: 60px;">
+                                </td>
+                                <td class="observation-field">
+                        <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                    </td>
+                </tr>
+                <tr>
+                                <td class="element-name">VIDRIOS</td>
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="ydoor-frame" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="ydoor-frame" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="ydoor-frame" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+                                <td class="quantity">
+                                     <input type="number" min="0" value="1" style="width: 60px;">
+                                 </td>
+                                <td class="observation-field">
+                                    <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                                </td>
+
+                                
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="ydoor-frame-return" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="ydoor-frame-return" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="ydoor-frame-return" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+
+
+                                <td class="quantity">
+                                    <input type="number" min="0" value="1" style="width: 60px;">
+                                </td>
+                                <td class="observation-field">
+                        <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                    </td>
+                </tr>
+                <tr>
+                                <td class="element-name">RIELES</td>
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="udoor-frame" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="udoor-frame" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="udoor-frame" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+                                <td class="quantity">
+                                     <input type="number" min="0" value="1" style="width: 60px;">
+                                 </td>
+                                <td class="observation-field">
+                                    <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                                </td>
+
+                                
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="udoor-frame-return" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="udoor-frame-return" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="udoor-frame-return" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+
+
+                                <td class="quantity">
+                                    <input type="number" min="0" value="1" style="width: 60px;">
+                                </td>
+                                <td class="observation-field">
+                        <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                    </td>
+                </tr>
+                <tr>
+                                <td class="element-name">CORTINAS</td>
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="idoor-frame" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="idoor-frame" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="idoor-frame" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+                                <td class="quantity">
+                                     <input type="number" min="0" value="1" style="width: 60px;">
+                                 </td>
+                                <td class="observation-field">
+                                    <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                                </td>
+
+                                
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="idoor-frame-return" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="idoor-frame-return" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="idoor-frame-return" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+
+
+                                <td class="quantity">
+                                    <input type="number" min="0" value="1" style="width: 60px;">
+                                </td>
+                                <td class="observation-field">
+                        <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                    </td>
+                </tr>
+                <tr>
+                                <td class="element-name">REJAS</td>
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="odoor-frame" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="odoor-frame" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="odoor-frame" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+                                <td class="quantity">
+                                     <input type="number" min="0" value="1" style="width: 60px;">
+                                 </td>
+                                <td class="observation-field">
+                                    <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                                </td>
+
+                                
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="odoor-frame-return" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="odoor-frame-return" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="odoor-frame-return" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+
+
+                                <td class="quantity">
+                                    <input type="number" min="0" value="1" style="width: 60px;">
+                                </td>
+                                <td class="observation-field">
+                        <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                    </td>
+                </tr>
+                <tr>
+                                <td class="element-name">PISOS</td>
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="pdoor-frame" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="pdoor-frame" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="pdoor-frame" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+                                <td class="quantity">
+                                     <input type="number" min="0" value="1" style="width: 60px;">
+                                 </td>
+                                <td class="observation-field">
+                                    <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                                </td>
+
+                                
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="pdoor-frame-return" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="pdoor-frame-return" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="pdoor-frame-return" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+
+
+                                <td class="quantity">
+                                    <input type="number" min="0" value="1" style="width: 60px;">
+                                </td>
+                                <td class="observation-field">
+                        <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                    </td>
+                </tr>
+                <tr>
+                                <td class="element-name">ESTUFA</td>
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="adoor-frame" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="adoor-frame" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="adoor-frame" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+                                <td class="quantity">
+                                     <input type="number" min="0" value="1" style="width: 60px;">
+                                 </td>
+                                <td class="observation-field">
+                                    <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                                </td>
+
+                                
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="adoor-frame-return" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="adoor-frame-return" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="adoor-frame-return" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+
+
+                                <td class="quantity">
+                                    <input type="number" min="0" value="1" style="width: 60px;">
+                                </td>
+                                <td class="observation-field">
+                        <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                    </td>
+                </tr>
+                <tr>
+                                <td class="element-name">HORNO</td>
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="fdoor-frame" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="fdoor-frame" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="fdoor-frame" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+                                <td class="quantity">
+                                     <input type="number" min="0" value="1" style="width: 60px;">
+                                 </td>
+                                <td class="observation-field">
+                                    <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                                </td>
+
+                                
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="fdoor-frame-return" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="fdoor-frame-return" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="fdoor-frame-return" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+
+
+                                <td class="quantity">
+                                    <input type="number" min="0" value="1" style="width: 60px;">
+                                </td>
+                                <td class="observation-field">
+                        <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="element-name">EXTRACTOR DE OLORES</td>
+                    <td class="status-options">
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="loyycks-delivery" value="good"> BUENO
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="loyycks-delivery" value="regular"> REGULAR
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="loyycks-delivery" value="bad"> MALO
+                            </label>
+                        </div>
+                    </td>
+                    <td class="quantity">
+                        <input type="number" min="0" value="1" style="width: 60px;">
+                    </td>
+                    <td class="observation-field">
+                        <textarea class="observation-input" placeholder="Observación entrega..."></textarea>
+                    </td>
+                    <td class="status-options">
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="loyycks-return" value="good"> BUENO
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="loyycks-return" value="regular"> REGULAR
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="loyycks-return" value="bad"> MALO
+                            </label>
+                        </div>
+                    </td>
+                    <td class="quantity">
+                        <input type="number" min="0" value="1" style="width: 60px;">
+                    </td>
+                    <td class="observation-field">
+                        <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                    </td>
+                </tr>
+                <tr>
+                                <td class="element-name">PAREDES</td>
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="gdoor-frame" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="gdoor-frame" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="gdoor-frame" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+                                <td class="quantity">
+                                     <input type="number" min="0" value="1" style="width: 60px;">
+                                 </td>
+                                <td class="observation-field">
+                                    <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                                </td>
+
+                                
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="gdoor-frame-return" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="gdoor-frame-return" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="gdoor-frame-return" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+
+
+                                <td class="quantity">
+                                    <input type="number" min="0" value="1" style="width: 60px;">
+                                </td>
+                                <td class="observation-field">
+                        <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                    </td>
+                </tr>
+                <tr>
+                                <td class="element-name">TECHOS</td>
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="hdoor-frame" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="hdoor-frame" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="hdoor-frame" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+                                <td class="quantity">
+                                     <input type="number" min="0" value="1" style="width: 60px;">
+                                 </td>
+                                <td class="observation-field">
+                                    <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                                </td>
+
+                                
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="hdoor-frame-return" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="hdoor-frame-return" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="hdoor-frame-return" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+
+
+                                <td class="quantity">
+                                    <input type="number" min="0" value="1" style="width: 60px;">
+                                </td>
+                                <td class="observation-field">
+                        <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                    </td>
+                </tr>
+                <tr>
+                                <td class="element-name">PINTURA</td>
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="kdoor-frame" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="kdoor-frame" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="kdoor-frame" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+                                <td class="quantity">
+                                     <input type="number" min="0" value="1" style="width: 60px;">
+                                 </td>
+                                <td class="observation-field">
+                                    <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                                </td>
+
+                                
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="kdoor-frame-return" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="kdoor-frame-return" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="kdoor-frame-return" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+
+
+                                <td class="quantity">
+                                    <input type="number" min="0" value="1" style="width: 60px;">
+                                </td>
+                                <td class="observation-field">
+                        <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                    </td>
+                </tr>
+                <tr>
+                                <td class="element-name">GUARDA ESCOBAS</td>
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="door-frpame" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="door-frpame" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="door-frpame" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+                                <td class="quantity">
+                                     <input type="number" min="0" value="1" style="width: 60px;">
+                                 </td>
+                                <td class="observation-field">
+                                    <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                                </td>
+
+                                
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="door-frpame-return" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="door-frpame-return" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="door-frpame-return" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+
+
+                                <td class="quantity">
+                                    <input type="number" min="0" value="1" style="width: 60px;">
+                                </td>
+                                <td class="observation-field">
+                        <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="element-name">TOMAS ELECTRICAS</td>
+                    <td class="status-options">
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="glassh-delivery" value="good"> BUENO
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="glassh-delivery" value="regular"> REGULAR
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="glassh-delivery" value="bad"> MALO
+                            </label>
+                        </div>
+                    </td>
+                    <td class="quantity">
+                        <input type="number" min="0" value="5" style="width: 60px;">
+                    </td>
+                    <td class="observation-field">
+                        <textarea class="observation-input" placeholder="Observación entrega..."></textarea>
+                    </td>
+                    <td class="status-options">
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="glassh-return" value="good"> BUENO
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="glassh-return" value="regular"> REGULAR
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="glassh-return" value="bad"> MALO
+                            </label>
+                        </div>
+                    </td>
+                    <td class="quantity">
+                        <input type="number" min="0" value="5" style="width: 60px;">
+                    </td>
+                    <td class="observation-field">
+                        <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="element-name">INTERRUPTORES</td>
+                    <td class="status-options">
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="locnks-delivery" value="good"> BUENO
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="locnks-delivery" value="regular"> REGULAR
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="locnks-delivery" value="bad"> MALO
+                            </label>
+                        </div>
+                    </td>
+                    <td class="quantity">
+                        <input type="number" min="0" value="1" style="width: 60px;">
+                    </td>
+                    <td class="observation-field">
+                        <textarea class="observation-input" placeholder="Observación entrega..."></textarea>
+                    </td>
+                    <td class="status-options">
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="locnks-return" value="good"> BUENO
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="locnks-return" value="regular"> REGULAR
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="locnks-return" value="bad"> MALO
+                            </label>
+                        </div>
+                    </td>
+                    <td class="quantity">
+                        <input type="number" min="0" value="1" style="width: 60px;">
+                    </td>
+                    <td class="observation-field">
+                        <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                    </td>
+                </tr>
+                <tr>
+                                <td class="element-name">ROSETAS</td>
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="door-hhframe" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="door-hhframe" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="door-hhframe" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+                                <td class="quantity">
+                                     <input type="number" min="0" value="1" style="width: 60px;">
+                                 </td>
+                                <td class="observation-field">
+                                    <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                                </td>
+
+                                
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="door-hhframe-return" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="door-hhframe-return" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="door-hhframe-return" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+
+
+                                <td class="quantity">
+                                    <input type="number" min="0" value="1" style="width: 60px;">
+                                </td>
+                                <td class="observation-field">
+                        <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                    </td>
+                </tr>
+                
+                
+                <tr>
+                                <td class="element-name">LAMPARAS</td>
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="dorror-frame" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="dorror-frame" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="dorror-frame" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+                                <td class="quantity">
+                                     <input type="number" min="0" value="1" style="width: 60px;">
+                                 </td>
+                                <td class="observation-field">
+                                    <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                                </td>
+
+                                
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="dorror-frame-return" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="dorror-frame-return" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="dorror-frame-return" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+
+
+                                <td class="quantity">
+                                    <input type="number" min="0" value="1" style="width: 60px;">
+                                </td>
+                                <td class="observation-field">
+                        <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                    </td>
+                </tr>
+                
+
+                <tr>
+                                <td class="element-name">MUEBLES</td>
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="dwwoor-frame" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="dwwoor-frame" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="dwwoor-frame" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+                                <td class="quantity">
+                                     <input type="number" min="0" value="1" style="width: 60px;">
+                                 </td>
+                                <td class="observation-field">
+                                    <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                                </td>
+
+                                
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="dwwoor-frame-return" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="dwwoor-frame-return" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="dwwoor-frame-return" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+
+
+                                <td class="quantity">
+                                    <input type="number" min="0" value="1" style="width: 60px;">
+                                </td>
+                                <td class="observation-field">
+                        <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="element-name">MUEBLE SUPERIOR</td>
+                    <td class="status-options">
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="lockspp-delivery" value="good"> BUENO
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="lockspp-delivery" value="regular"> REGULAR
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="lockspp-delivery" value="bad"> MALO
+                            </label>
+                        </div>
+                    </td>
+                    <td class="quantity">
+                        <input type="number" min="0" value="1" style="width: 60px;">
+                    </td>
+                    <td class="observation-field">
+                        <textarea class="observation-input" placeholder="Observación entrega..."></textarea>
+                    </td>
+                    <td class="status-options">
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="lockspp-return" value="good"> BUENO
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="lockspp-return" value="regular"> REGULAR
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="lockspp-return" value="bad"> MALO
+                            </label>
+                        </div>
+                    </td>
+                    <td class="quantity">
+                        <input type="number" min="0" value="1" style="width: 60px;">
+                    </td>
+                    <td class="observation-field">
+                        <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="element-name">MUEBLE INFERIOR</td>
+                    <td class="status-options">
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="lLocks-delivery" value="good"> BUENO
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="lLocks-delivery" value="regular"> REGULAR
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="lLocks-delivery" value="bad"> MALO
+                            </label>
+                        </div>
+                    </td>
+                    <td class="quantity">
+                        <input type="number" min="0" value="1" style="width: 60px;">
+                    </td>
+                    <td class="observation-field">
+                        <textarea class="observation-input" placeholder="Observación entrega..."></textarea>
+                    </td>
+                    <td class="status-options">
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="lLocks-return" value="good"> BUENO
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="lLocks-return" value="regular"> REGULAR
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="lLocks-return" value="bad"> MALO
+                            </label>
+                        </div>
+                    </td>
+                    <td class="quantity">
+                        <input type="number" min="0" value="1" style="width: 60px;">
+                    </td>
+                    <td class="observation-field">
+                        <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                    </td>
+                </tr>
+                <tr>
+                                <td class="element-name">OTROS</td>
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="door-framere" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="door-framere" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="door-framere" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+                                <td class="quantity">
+                                     <input type="number" min="0" value="1" style="width: 60px;">
+                                 </td>
+                                <td class="observation-field">
+                                    <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                                </td>
+
+                                
+                                <td class="status-options">
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="door-framere-return" value="good"> BUENO
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="door-framere-return" value="regular"> REGULAR
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="door-framere-return" value="bad"> MALO
+                                        </label>
+                                    </div>
+                                </td>
+
+
+                                <td class="quantity">
+                                    <input type="number" min="0" value="1" style="width: 60px;">
+                                </td>
+                                <td class="observation-field">
+                        <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                    </td>
+                </tr>
+
+                        </tbody>
+                    </table>
+
+                    <div class="photo-section">
+  <button class="btn-add-photo" onclick="document.getElementById('fileInput-kitchen').click()">
+    <i class="fas fa-camera"></i> Añadir Fotos COCINA
+  </button>
+  <input type="file" id="fileInput-kitchen" accept="image/*" multiple style="display:none"
+         onchange="previewPhotos(event, 'kitchen')">
+
+  <div class="photo-gallery" id="kitchen-gallery"></div>
+</div>
+</div>
+
+ <div class="section-title" onclick="toggleSection('main-room')">
+                <h3><i class="fas fa-bed"></i> HABITACIÓN PRINCIPAL</h3>
+                <span>+</span>
+            </div>
+            <div id="main-room" class="section-content">
+                <table class="inventory-table">
+                    <thead>
+                        <tr>
+                            <th class="element-name">ELEMENTO</th>
+                            <th class="status-options">ESTADO DE ENTREGA</th>
+                            <th class="quantity">CANTIDAD</th>
+                            <th class="observation-field">OBSERVACIONES</th>
+                            <th class="status-options">ESTADO DE RESTITUCIÓN</th>
+                            <th class="quantity">CANTIDAD</th>
+                            <th class="observation-field">OBSERVACIONES</th>
+
+                        </tr>
+                    </thead>
+                    
+                        <tr>
+                            <td class="element-name">MARCO DE LA PUERTA</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="diioor-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="diioor-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="diioor-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="diioor-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="diioor-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="diioor-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">PUERTA PRINCIPAL</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-fram" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-fram" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-fram" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-fram-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-fram-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-fram-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">CERRADURA PUERTA</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-frae" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-frae" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-frae" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-frae-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-frae-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-frae-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">LLAVES</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dor-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dor-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dor-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dor-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dor-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dor-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">VENTANAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoor-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoor-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoor-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoor-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoor-frame-return" value="regular"> RREGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoor-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">VIDRIOS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dosor-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dosor-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dosor-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dosor-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dosor-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dosor-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">CORTINAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doohr-curtains" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doohr-curtains" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doohr-curtains" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doohr-curtains-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doohr-curtains-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doohr-curtains-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">RIELES</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dqoor-curtains" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dqoor-curtains" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dqoor-curtains" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dqoor-curtains-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dqoor-curtains-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dqoor-curtains-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">REJAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doogr-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doogr-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doogr-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doogr-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doogr-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doogr-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">PISOS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="djoor-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="djoor-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="djoor-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="djoor-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="djoor-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="djoor-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">PAREDES</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdoor-framle" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdoor-framle" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdoor-framle" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdoor-framle-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdoor-framle-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdoor-framle-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">TECHOS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="xdoor-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="xdoor-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="xdoor-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="xdoor-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="xdoor-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="xdoor-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">PINTURA</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="cdoor-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="cdoor-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="cdoor-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="cdoor-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="cdoor-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="cdoor-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">GUARDA ESCOBAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doonr-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doonr-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doonr-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doonr-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doonr-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doonr-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td class="element-name">TOMAS ELECTRICAS</td>
+                <td class="status-options">
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="gls-delivery" value="good"> BUENO
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="gls-delivery" value="regular"> REGULAR
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="gls-delivery" value="bad"> MALO
+                        </label>
+                    </div>
+                </td>
+                <td class="quantity">
+                    <input type="number" min="0" value="5" style="width: 60px;">
+                </td>
+                <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación entrega..."></textarea>
+                </td>
+                <td class="status-options">
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="gls-return" value="good"> BUENO
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="gls-return" value="regular"> REGULAR
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="gls-return" value="bad"> MALO
+                        </label>
+                    </div>
+                </td>
+                <td class="quantity">
+                    <input type="number" min="0" value="5" style="width: 60px;">
+                </td>
+                <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td class="element-name">INTERRUPTORES</td>
+                <td class="status-options">
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="loks-delivery" value="good"> BUENO
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="loks-delivery" value="regular"> REGULAR
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="loks-delivery" value="bad"> MALO
+                        </label>
+                    </div>
+                </td>
+                <td class="quantity">
+                    <input type="number" min="0" value="1" style="width: 60px;">
+                </td>
+                <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación entrega..."></textarea>
+                </td>
+                <td class="status-options">
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="loks-return" value="good"> BUENO
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="loks-return" value="regular"> REGULAR
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="loks-return" value="bad"> MALO
+                        </label>
+                    </div>
+                </td>
+                <td class="quantity">
+                    <input type="number" min="0" value="1" style="width: 60px;">
+                </td>
+                <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">ROSETAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-frajme" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-frajme" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-frajme" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-frajme-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-frajme-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-frajme-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            
+            
+            <tr>
+                            <td class="element-name">LAMPARAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtoor-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtoor-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtoor-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtoor-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtoor-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtoor-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">MUEBLES</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doorf-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doorf-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doorf-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doorf-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doorf-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doorf-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+<tr>
+                            <td class="element-name">ENTREPAÑOS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-fdrame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-fdrame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-fdrame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-fdrame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-fdrame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-fdrame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">OTROS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doorm-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doorm-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doorm-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doorm-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doorm-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doorm-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+
+                    </tbody>
+                </table>
+
+                <div class="photo-section">
+  <button class="btn-add-photo" onclick="document.getElementById('fileInput-main-room').click()">
+    <i class="fas fa-camera"></i> Añadir Fotos HABITACIÓN PRINCIPAL
+  </button>
+    <input type="file" id="fileInput-main-room" accept="image/*" multiple style="display:none"
+         onchange="previewPhotos(event, 'main-room')">
+    <div class="photo-gallery" id="main-room-gallery"></div>
+    </div>
+</div>
+
+        <div class="section-title" onclick="toggleSection('auxiliary-room')">
+                <h3><i class="fas fa-warehouse"></i> HABITACIÓN AUXILIAR 1 </h3>
+                <span>+</span>
+            </div>
+            <div id="auxiliary-room" class="section-content">
+                <table class="inventory-table">
+                    <thead>
+                        <tr>
+                            <th class="element-name">ELEMENTO</th>
+                            <th class="status-options">ESTADO DE ENTREGA</th>
+                            <th class="quantity">CANTIDAD</th>
+                            <th class="observation-field">OBSERVACIONES</th>
+                            <th class="status-options">ESTADO DE RESTITUCIÓN</th>
+                            <th class="quantity">CANTIDAD</th>
+                            <th class="observation-field">OBSERVACIONES</th>
+
+                        </tr>
+                    </thead>
+                    
+                        <tr>
+                            <td class="element-name">MARCO DE LA PUERTA</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="diior-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="diior-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="diior-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="diior-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="diior-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="diior-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">PUERTA PRINCIPAL</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dooccr-fram" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dooccr-fram" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dooccr-fram" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dooccr-fram-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dooccr-fram-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dooccr-fram-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">CERRADURA PUERTA</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dr-frae" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dr-frae" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dr-frae" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dr-frae-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dr-frae-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dr-frae-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">LLAVES</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dor-fme" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dor-fme" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dor-fme" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dor-fme-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dor-fme-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dor-fme-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">VENTANAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoor-frae" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoor-frae" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoor-frae" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoor-frae-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoor-frae-return" value="regular"> RREGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoor-frae-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">VIDRIOS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dosor-frane" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dosor-frane" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dosor-frane" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dosor-frane-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dosor-frane-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dosor-frane-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">CORTINAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doohr-curtai" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doohr-curtai" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doohr-curtai" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doohr-curtai-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doohr-curtai-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doohr-curtai-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">RIELES</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dqor-curtains" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dqor-curtains" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dqor-curtains" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dqor-curtains-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dqor-curtains-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dqor-curtains-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">REJAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dogr-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dogr-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dogr-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dogr-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dogr-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dogr-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">PISOS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="djor-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="djor-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="djor-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="djor-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="djor-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="djor-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">PAREDES</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdor-framle" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdor-framle" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdor-framle" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdor-framle-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdor-framle-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdor-framle-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">TECHOS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="xoor-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="xoor-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="xoor-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="xoor-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="xoor-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="xoor-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">PINTURA</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="coor-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="coor-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="coor-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="coor-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="coor-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="coor-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">GUARDA ESCOBAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="donr-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="donr-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="donr-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="donr-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="donr-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="donr-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td class="element-name">TOMAS ELECTRICAS</td>
+                <td class="status-options">
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="gltts-delivery" value="good"> BUENO
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="gltts-delivery" value="regular"> REGULAR
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="gltts-delivery" value="bad"> MALO
+                        </label>
+                    </div>
+                </td>
+                <td class="quantity">
+                    <input type="number" min="0" value="5" style="width: 60px;">
+                </td>
+                <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación entrega..."></textarea>
+                </td>
+                <td class="status-options">
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="gltts-return" value="good"> BUENO
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="gltts-return" value="regular"> REGULAR
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="gltts-return" value="bad"> MALO
+                        </label>
+                    </div>
+                </td>
+                <td class="quantity">
+                    <input type="number" min="0" value="5" style="width: 60px;">
+                </td>
+                <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td class="element-name">INTERRUPTORES</td>
+                <td class="status-options">
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="laoks-delivery" value="good"> BUENO
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="laoks-delivery" value="regular"> REGULAR
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="laoks-delivery" value="bad"> MALO
+                        </label>
+                    </div>
+                </td>
+                <td class="quantity">
+                    <input type="number" min="0" value="1" style="width: 60px;">
+                </td>
+                <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación entrega..."></textarea>
+                </td>
+                <td class="status-options">
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="laoks-return" value="good"> BUENO
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="laoks-return" value="regular"> REGULAR
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="laoks-return" value="bad"> MALO
+                        </label>
+                    </div>
+                </td>
+                <td class="quantity">
+                    <input type="number" min="0" value="1" style="width: 60px;">
+                </td>
+                <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">ROSETAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doaor-frajme" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doaor-frajme" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doaor-frajme" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doaor-frajme-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doaor-frajme-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doaor-frajme-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            
+            
+            <tr>
+                            <td class="element-name">LAMPARAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtosor-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtosor-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtosor-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtosor-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtosor-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtosor-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">MUEBLES</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doogrf-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doogrf-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doogrf-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doogrf-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doogrf-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doogrf-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+<tr>
+                            <td class="element-name">ENTREPAÑOS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dojor-fdrame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dojor-fdrame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dojor-fdrame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dojor-fdrame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dojor-fdrame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dojor-fdrame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">OTROS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokorm-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokorm-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokorm-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokorm-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokorm-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokorm-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+
+                    </tbody>
+                </table>
+
+                <div class="photo-section">
+  <button class="btn-add-photo" onclick="document.getElementById('fileInput-main-room-one').click()">
+    <i class="fas fa-camera"></i> Añadir Fotos HABITACIÓN AUXILIAR 1
+  </button>
+  <input type="file" id="fileInput-main-room-one" accept="image/*" multiple style="display:none"
+         onchange="previewPhotos(event, 'main-room-one')">
+
+  <div class="photo-gallery" id="main-room-one-gallery"></div>
+</div>
+</div>
+
+ <div class="section-title" onclick="toggleSection('auxiliary-room-two')">
+                <h3><i class="fas fa-tv"></i> HABITACIÓN AUXILIAR 2 </h3>
+                <span>+</span>
+            </div>
+            <div id="auxiliary-room-two" class="section-content">
+                <table class="inventory-table">
+                    <thead>
+                        <tr>
+                            <th class="element-name">ELEMENTO</th>
+                            <th class="status-options">ESTADO DE ENTREGA</th>
+                            <th class="quantity">CANTIDAD</th>
+                            <th class="observation-field">OBSERVACIONES</th>
+                            <th class="status-options">ESTADO DE RESTITUCIÓN</th>
+                            <th class="quantity">CANTIDAD</th>
+                            <th class="observation-field">OBSERVACIONES</th>
+
+                        </tr>
+                    </thead>
+                    
+                        <tr>
+                            <td class="element-name">MARCO DE LA PUERTA</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="diiorr-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="diiorr-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="diiorr-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="diiorr-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="diiorr-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="diiorr-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">PUERTA PRINCIPAL</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dooccar-fram" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dooccar-fram" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dooccar-fram" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dooccar-fram-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dooccar-fram-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dooccar-fram-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">CERRADURA PUERTA</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dr-frrae" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dr-frrae" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dr-frrae" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dr-frrae-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dr-frrae-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dr-frrae-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">LLAVES</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="deor-fme" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="deor-fme" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="deor-fme" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="deor-fme-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="deor-fme-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="deor-fme-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">VENTANAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoror-frae" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoror-frae" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoror-frae" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoror-frae-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoror-frae-return" value="regular"> RREGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoror-frae-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">VIDRIOS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dosoaar-frane" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dosoaar-frane" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dosoaar-frane" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dosoaar-frane-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dosoaar-frane-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dosoaar-frane-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">CORTINAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dooghr-curtai" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dooghr-curtai" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dooghr-curtai" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dooghr-curtai-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dooghr-curtai-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dooghr-curtai-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">RIELES</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dwqor-curtains" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dwqor-curtains" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dwqor-curtains" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dwqor-curtains-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dwqor-curtains-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dwqor-curtains-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">REJAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="docgr-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="docgr-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="docgr-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="docgr-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="docgr-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="docgr-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">PISOS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="djjor-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="djjor-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="djjor-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="djjor-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="djjor-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="djjor-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">PAREDES</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdojr-framle" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdojr-framle" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdojr-framle" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdojr-framle-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdojr-framle-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdojr-framle-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">TECHOS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="xoojr-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="xoojr-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="xoojr-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="xoojr-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="xoojr-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="xoojr-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">PINTURA</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="cojor-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="cojor-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="cojor-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="cojor-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="cojor-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="cojor-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">GUARDA ESCOBAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dojnr-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dojnr-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dojnr-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dojnr-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dojnr-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dojnr-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td class="element-name">TOMAS ELECTRICAS</td>
+                <td class="status-options">
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="gltjts-delivery" value="good"> BUENO
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="gltjts-delivery" value="regular"> REGULAR
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="gltjts-delivery" value="bad"> MALO
+                        </label>
+                    </div>
+                </td>
+                <td class="quantity">
+                    <input type="number" min="0" value="5" style="width: 60px;">
+                </td>
+                <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación entrega..."></textarea>
+                </td>
+                <td class="status-options">
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="gltjts-return" value="good"> BUENO
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="gltjts-return" value="regular"> REGULAR
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="gltjts-return" value="bad"> MALO
+                        </label>
+                    </div>
+                </td>
+                <td class="quantity">
+                    <input type="number" min="0" value="5" style="width: 60px;">
+                </td>
+                <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td class="element-name">INTERRUPTORES</td>
+                <td class="status-options">
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="laokjs-delivery" value="good"> BUENO
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="laokjs-delivery" value="regular"> REGULAR
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="laokjs-delivery" value="bad"> MALO
+                        </label>
+                    </div>
+                </td>
+                <td class="quantity">
+                    <input type="number" min="0" value="1" style="width: 60px;">
+                </td>
+                <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación entrega..."></textarea>
+                </td>
+                <td class="status-options">
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="laokjs-return" value="good"> BUENO
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="laokjs-return" value="regular"> REGULAR
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="laokjs-return" value="bad"> MALO
+                        </label>
+                    </div>
+                </td>
+                <td class="quantity">
+                    <input type="number" min="0" value="1" style="width: 60px;">
+                </td>
+                <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">ROSETAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dojaor-frajme" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dojaor-frajme" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dojaor-frajme" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dojaor-frajme-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dojaor-frajme-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dojaor-frajme-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            
+            
+            <tr>
+                            <td class="element-name">LAMPARAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtosjor-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtosjor-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtosjor-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtosjor-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtosjor-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtosjor-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">MUEBLES</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doojgrf-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doojgrf-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doojgrf-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doojgrf-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doojgrf-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doojgrf-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+<tr>
+                            <td class="element-name">ENTREPAÑOS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dojojr-fdrame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dojojr-fdrame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dojojr-fdrame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dojojr-fdrame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dojojr-fdrame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dojojr-fdrame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">OTROS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojrm-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojrm-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojrm-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojrm-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojrm-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojrm-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+
+                    </tbody>
+                </table>
+                <div class="photo-section">
+  <button class="btn-add-photo" onclick="document.getElementById('fileInput-auxiliary-room-two').click()">
+    <i class="fas fa-camera"></i> Añadir Fotos HABITACIÓN AUXILIAR 2
+  </button>
+    <input type="file" id="fileInput-auxiliary-room-two" accept="image/*" multiple style="display:none"
+         onchange="previewPhotos(event, 'auxiliary-room-two')">
+    <div class="photo-gallery" id="auxiliary-room-two-gallery"></div>
+    </div>
+</div>
+
+
+            <div class="section-title" onclick="toggleSection('bath-room')">
+                <h3><i class="fas fa-toilet"></i> BAÑO PRINCIPAL </h3>
+                <span>+</span>
+            </div>
+            <div id="bath-room" class="section-content">
+                <table class="inventory-table">
+                    <thead>
+                        <tr>
+                            <th class="element-name">ELEMENTO</th>
+                            <th class="status-options">ESTADO DE ENTREGA</th>
+                            <th class="quantity">CANTIDAD</th>
+                            <th class="observation-field">OBSERVACIONES</th>
+                            <th class="status-options">ESTADO DE RESTITUCIÓN</th>
+                            <th class="quantity">CANTIDAD</th>
+                            <th class="observation-field">OBSERVACIONES</th>
+
+                        </tr>
+                    </thead>
+                    
+                        <tr>
+                            <td class="element-name">MARCO DE LA PUERTA</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="diirr-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="diirr-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="diirr-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="diirr-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="diirr-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="diirr-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">PUERTA PRINCIPAL</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doccar-fram" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doccar-fram" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doccar-fram" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doccar-fram-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doccar-fram-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doccar-fram-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">CERRADURA PUERTA</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="drgg-frrae" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="drgg-frrae" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="drgg-frrae" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="drgg-frrae-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="drgg-frrae-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="drgg-frrae-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">LLAVES</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="detor-fme" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="detor-fme" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="detor-fme" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="detor-fme-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="detor-fme-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="detor-fme-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            
+            <tr>
+                            <td class="element-name">VIDRIOS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dostoaar-frane" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dostoaar-frane" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dostoaar-frane" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dostoaar-frane-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dostoaar-frane-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dostoaar-frane-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">LAVAMANOS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dooighr-curtai" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dooighr-curtai" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dooighr-curtai" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dooighr-curtai-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dooighr-curtai-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dooighr-curtai-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">ESPEJOS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dwqor-curtiains" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dwqor-curtiains" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dwqor-curtiains" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dwqor-curtiains-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dwqor-curtiains-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dwqor-curtiains-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">MESON</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="docagr-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="docagr-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="docagr-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="docagr-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="docagr-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="docagr-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">MUEBLES</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="djvjor-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="djvjor-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="djvjor-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="djvjor-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="djvjor-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="djvjor-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">GABINETES</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdojr-framkle" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdojr-framkle" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdojr-framkle" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdojr-framkle-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdojr-framkle-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdojr-framkle-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">SANITARIO</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="xoojr-frajme" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="xoojr-frajme" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="xoojr-frajme" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="xoojr-frajme-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="xoojr-frajme-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="xoojr-frajme-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">TOALLERO</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="ctojor-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="ctojor-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="ctojor-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="ctojor-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="ctojor-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="ctojor-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">JABONERA</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="domjnr-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="do,jnr-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="domjnr-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="domjnr-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="domjnr-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="domjnr-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td class="element-name">CEPILLERO</td>
+                <td class="status-options">
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="gltjt-delivery" value="good"> BUENO
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="gltjt-delivery" value="regular"> REGULAR
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="gltjt-delivery" value="bad"> MALO
+                        </label>
+                    </div>
+                </td>
+                <td class="quantity">
+                    <input type="number" min="0" value="5" style="width: 60px;">
+                </td>
+                <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación entrega..."></textarea>
+                </td>
+                <td class="status-options">
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="gltjt-return" value="good"> BUENO
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="gltjt-return" value="regular"> REGULAR
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="gltjt-return" value="bad"> MALO
+                        </label>
+                    </div>
+                </td>
+                <td class="quantity">
+                    <input type="number" min="0" value="5" style="width: 60px;">
+                </td>
+                <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td class="element-name">PISOS</td>
+                <td class="status-options">
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="aokjs-delivery" value="good"> BUENO
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="aokjs-delivery" value="regular"> REGULAR
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="aokjs-delivery" value="bad"> MALO
+                        </label>
+                    </div>
+                </td>
+                <td class="quantity">
+                    <input type="number" min="0" value="1" style="width: 60px;">
+                </td>
+                <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación entrega..."></textarea>
+                </td>
+                <td class="status-options">
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="aokjs-return" value="good"> BUENO
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="aokjs-return" value="regular"> REGULAR
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="aokjs-return" value="bad"> MALO
+                        </label>
+                    </div>
+                </td>
+                <td class="quantity">
+                    <input type="number" min="0" value="1" style="width: 60px;">
+                </td>
+                <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">PAREDES</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dojañor-frajme" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dojañor-frajme" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dojañor-frajme" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dojañor-frajme-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dojañor-frajme-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dojañor-frajme-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            
+            
+            <tr>
+                            <td class="element-name">TECHOS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtoqsjor-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtoqsjor-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtoqsjor-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtoqsjor-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtoqsjor-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtoqsjor-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">PUERTA DE VIDRIO</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoojgrf-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoojgrf-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoojgrf-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoojgrf-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoojgrf-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoojgrf-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+<tr>
+                            <td class="element-name">LAMPARAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dosjojr-fdrame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dosjojr-fdrame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dosjojr-fdrame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dosjojr-fdrame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dosjojr-fdrame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dosjojr-fdrame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">ROSETAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dfokojrm-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dfokojrm-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dfokojrm-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dfokojrm-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dfokojrm-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dfokojrm-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">SOPORTE PAPEL HIGIENICO</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dozkojrm-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dozkojrm-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dozkojrm-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dozkojrm-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dozkojrm-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dozkojrm-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">DUCHA</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojrm-friame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojrm-friame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojrm-friame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojrm-friame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojrm-friame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojrm-friame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">SOPORTE TOALLA</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojrm-fyrame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojrm-fyrame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojrm-fyrame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojrm-fyrame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojrm-fyrame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojrm-fyrame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">TOMAS ELECTRICAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojwrm-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojwrm-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojwrm-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojwrm-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojwrm-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojwrm-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">INTERRUPTORES</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojrm-frames" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojrm-frames" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojrm-frames" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojrm-frames-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojrm-frames-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojrm-frames-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+
+            <tr>
+                            <td class="element-name">OTROS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojrm-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojrm-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojrm-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojrm-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojrm-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojrm-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+                </tbody>
+                </table>
+                <div class="photo-section">
+  <button class="btn-add-photo" onclick="document.getElementById('fileInput-bath-room').click()">
+    <i class="fas fa-camera"></i> Añadir Fotos BAÑO-PRINCIPAL
+  </button>
+    <input type="file" id="fileInput-bath-room" accept="image/*" multiple style="display:none"
+         onchange="previewPhotos(event, 'bath-room')">
+    <div class="photo-gallery" id="bath-room-gallery"></div>
+    </div>
+</div>
+
+                
+
+            <div class="section-title" onclick="toggleSection('bath-room-two')">
+                <h3><i class="fas fa-shower"></i> BAÑO AUXILIAR </h3>
+                <span>+</span>
+            </div>
+            <div id="bath-room-two" class="section-content">
+                <table class="inventory-table">
+                    <thead>
+                        <tr>
+                            <th class="element-name">ELEMENTO</th>
+                            <th class="status-options">ESTADO DE ENTREGA</th>
+                            <th class="quantity">CANTIDAD</th>
+                            <th class="observation-field">OBSERVACIONES</th>
+                            <th class="status-options">ESTADO DE RESTITUCIÓN</th>
+                            <th class="quantity">CANTIDAD</th>
+                            <th class="observation-field">OBSERVACIONES</th>
+
+                        </tr>
+                    </thead>
+                    
+                        <tr>
+                            <td class="element-name">MARCO DE LA PUERTA</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="diirr-framee" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="diirr-framee" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="diirr-framee" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="diirr-framee-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="diirr-framee-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="diirr-framee-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">PUERTA PRINCIPAL</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doccar-frama" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doccar-frama" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doccar-frama" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doccar-frama-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doccar-frama-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doccar-frama-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">CERRADURA PUERTA</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="drgg-frrace" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="drgg-frrace" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="drgg-frrace" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="drgg-frrace-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="drgg-frrace-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="drgg-frrace-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">LLAVES</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="detor-fyme" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="detor-fyme" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="detor-fyme" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="detor-fyme-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="detor-fyme-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="detor-fyme-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            
+            <tr>
+                            <td class="element-name">VIDRIOS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dostoaar-franve" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dostoaar-franve" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dostoaar-franve" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dostoaar-franve-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dostoaar-franve-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dostoaar-franve-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">LAVAMANOS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dooighr-curtlai" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dooighr-curtlai" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dooighr-curtlai" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dooighr-curtlai-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dooighr-curtlai-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dooighr-curtlai-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">ESPEJOS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dwqobr-curtiains" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dwqobr-curtiains" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dwqobr-curtiains" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dwqobr-curtiains-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dwqobr-curtiains-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dwqobr-curtiains-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">MESON</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="docagr-fruame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="docagr-fruame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="docagr-fruame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="docagr-fruame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="docagr-fruame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="docagr-fruame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">MUEBLES</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="djvjor-fxrame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="djvjor-fxrame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="djvjor-fxrame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="djvjor-fxrame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="djvjor-fxrame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="djvjor-fxrame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">GABINETES</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdojr-frnamkle" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdojr-frnamkle" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdojr-frnamkle" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdojr-franmkle-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdojr-franmkle-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdojr-franmkle-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">SANITARIO</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="xxoojr-frajme" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="xxoojr-frajme" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="xxoojr-frajme" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="xxoojr-frajme-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="xxoojr-frajme-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="xxoojr-frajme-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">TOALLERO</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="ctojor-frarme" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="ctojor-frarme" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="ctojor-frarme" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="ctojor-frarme-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="ctojor-frarme-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="ctojor-frarme-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">JABONERA</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="domjnr-framme" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="do,jnr-framme" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="domjnr-framme" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="domjnr-framme-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="domjnr-framme-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="domjnr-framme-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td class="element-name">CEPILLERO</td>
+                <td class="status-options">
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="gltjtii-delivery" value="good"> BUENO
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="gltjtii-delivery" value="regular"> REGULAR
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="gltjtii-delivery" value="bad"> MALO
+                        </label>
+                    </div>
+                </td>
+                <td class="quantity">
+                    <input type="number" min="0" value="5" style="width: 60px;">
+                </td>
+                <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación entrega..."></textarea>
+                </td>
+                <td class="status-options">
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="gltjtii-return" value="good"> BUENO
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="gltjtii-return" value="regular"> REGULAR
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="gltjtii-return" value="bad"> MALO
+                        </label>
+                    </div>
+                </td>
+                <td class="quantity">
+                    <input type="number" min="0" value="5" style="width: 60px;">
+                </td>
+                <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td class="element-name">PISOS</td>
+                <td class="status-options">
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="aokzzjs-delivery" value="good"> BUENO
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="aokzzjs-delivery" value="regular"> REGULAR
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="aokzzjs-delivery" value="bad"> MALO
+                        </label>
+                    </div>
+                </td>
+                <td class="quantity">
+                    <input type="number" min="0" value="1" style="width: 60px;">
+                </td>
+                <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación entrega..."></textarea>
+                </td>
+                <td class="status-options">
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="aokzzjs-return" value="good"> BUENO
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="aokzzjs-return" value="regular"> REGULAR
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="aokzzjs-return" value="bad"> MALO
+                        </label>
+                    </div>
+                </td>
+                <td class="quantity">
+                    <input type="number" min="0" value="1" style="width: 60px;">
+                </td>
+                <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">PAREDES</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dozjañor-frajme" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dozjañor-frajme" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dozjañor-frajme" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dozjañor-frajme-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dozjañor-frajme-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dozjañor-frajme-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            
+            
+            <tr>
+                            <td class="element-name">TECHOS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtoqzsjor-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtoqzsjor-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtoqzsjor-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtoqzsjor-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtoqzsjor-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtoqzsjor-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">PUERTA DE VIDRIO</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dazoojgrf-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dazoojgrf-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dazoojgrf-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dazoojgrf-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dazoojgrf-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dazoojgrf-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+<tr>
+                            <td class="element-name">LAMPARAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doszjojr-fdrame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doszjojr-fdrame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doszjojr-fdrame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doszjojr-fdrame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doszjojr-fdrame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doszjojr-fdrame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">ROSETAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dfokozjrm-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dfokozjrm-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dfokozjrm-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dfokozjrm-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dfokozjrm-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dfokozjrm-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">SOPORTE PAPEL HIGIENICO</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dozkoxjrm-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dozkoxjrm-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dozkoxjrm-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dozkoxjrm-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dozkoxjrm-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dozkoxjrm-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">DUCHA</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokocjrm-friame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokocjrm-friame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokocjrm-friame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokocjrm-friame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokocjrm-friame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokocjrm-friame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">SOPORTE TOALLA</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojrrm-fyrame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojrrm-fyrame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojrrm-fyrame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojrrm-fyrame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojrrm-fyrame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojrrm-fyrame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">TOMAS ELECTRICAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojwrrm-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojwrrm-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojwrrm-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojwrrm-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojwrrm-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojwrrm-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">INTERRUPTORES</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokhojrm-frames" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokhojrm-frames" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokhojrm-frames" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokhojrm-frames-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokhojrm-frames-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokhojrm-frames-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+
+            <tr>
+                            <td class="element-name">OTROS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojhrm-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojhrm-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojhrm-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojhrm-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojhrm-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dokojhrm-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+
+
+                    </tbody>
+                </table>
+                <div class="photo-section">
+  <button class="btn-add-photo" onclick="document.getElementById('fileInput-bath-room-two').click()">
+    <i class="fas fa-camera"></i> Añadir Fotos BAÑO AUXILIAR
+  </button>
+    <input type="file" id="fileInput-bath-room-two" accept="image/*" multiple style="display:none"
+         onchange="previewPhotos(event, 'bath-room-two')">
+    <div class="photo-gallery" id="bath-room-two-gallery"></div>
+    </div>
+</div>
+
+            <div class="section-title" onclick="toggleSection('clothing-area')">
+                <h3><i class="fas fa-tshirt"></i> ZONA DE ROPAS</h3>
+                <span>+</span>
+            </div>
+            <div id="clothing-area" class="section-content">
+                <table class="inventory-table">
+                    <thead>
+                        <tr>
+                            <th class="element-name">ELEMENTO</th>
+                            <th class="status-options">ESTADO DE ENTREGA</th>
+                            <th class="quantity">CANTIDAD</th>
+                            <th class="observation-field">OBSERVACIONES</th>
+                            <th class="status-options">ESTADO DE RESTITUCIÓN</th>
+                            <th class="quantity">CANTIDAD</th>
+                            <th class="observation-field">OBSERVACIONES</th>
+
+                        </tr>
+                    </thead>
+                    
+                        <tr>
+                            <td class="element-name">MARCO DE LA PUERTA</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="diaioor-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="diaioor-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="diaioor-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="diaioor-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="diaioor-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="diaioor-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">PUERTA PRINCIPAL</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doaor-fram" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doaor-fram" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doaor-fram" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doaor-fram-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doaor-fram-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doaor-fram-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">CERRADURA PUERTA</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doora-frae" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doora-frae" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doora-frae" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doora-frae-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doora-frae-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doora-frae-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">LLAVES</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doar-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doar-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doar-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doar-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doar-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doar-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">VENTANAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoaor-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoaor-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoaor-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoaor-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoaor-frame-return" value="regular"> RREGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoaor-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">VIDRIOS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dosaor-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dosaor-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dosaor-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dosaor-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dosaor-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dosaor-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">CORTINAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoohr-curtains" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoohr-curtains" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoohr-curtains" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoohr-curtains-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoohr-curtains-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="daoohr-curtains-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">RIELES</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dqoory-curtains" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dqoory-curtains" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dqoory-curtains" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dqoory-curtains-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dqoory-curtains-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dqoory-curtains-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">REJAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doogsr-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doogsr-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doogsr-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doogsr-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doogsr-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doogsr-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">PISOS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="djooruu-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="djooruu-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="djooruu-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="djooruu-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="djooruu-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="djooruu-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">PAREDES</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdoornn-framle" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdoornn-framle" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdoornn-framle" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdoornn-framle-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdoornn-framle-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="zdoornn-framle-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">TECHOS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="xdowwor-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="xdowwor-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="xdowwor-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="xdowwor-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="xdowwor-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="xdowwor-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">PINTURA</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="cdoeeor-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="cdoeeor-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="cdoeeor-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="cdoeeor-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="cdoeeor-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="cdoeeor-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="element-name">TOMAS ELECTRICAS</td>
+                <td class="status-options">
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="glts-delivery" value="good"> BUENO
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="glts-delivery" value="regular"> REGULAR
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="glts-delivery" value="bad"> MALO
+                        </label>
+                    </div>
+                </td>
+                <td class="quantity">
+                    <input type="number" min="0" value="5" style="width: 60px;">
+                </td>
+                <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación entrega..."></textarea>
+                </td>
+                <td class="status-options">
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="glts-return" value="good"> BUENO
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="glts-return" value="regular"> REGULAR
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="glts-return" value="bad"> MALO
+                        </label>
+                    </div>
+                </td>
+                <td class="quantity">
+                    <input type="number" min="0" value="5" style="width: 60px;">
+                </td>
+                <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td class="element-name">INTERRUPTORES</td>
+                <td class="status-options">
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="lotks-delivery" value="good"> BUENO
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="lotks-delivery" value="regular"> REGULAR
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="lotks-delivery" value="bad"> MALO
+                        </label>
+                    </div>
+                </td>
+                <td class="quantity">
+                    <input type="number" min="0" value="1" style="width: 60px;">
+                </td>
+                <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación entrega..."></textarea>
+                </td>
+                <td class="status-options">
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="lotks-return" value="good"> BUENO
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="lotks-return" value="regular"> REGULAR
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="lotks-return" value="bad"> MALO
+                        </label>
+                    </div>
+                </td>
+                <td class="quantity">
+                    <input type="number" min="0" value="1" style="width: 60px;">
+                </td>
+                <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">ROSETAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dttoor-frajme" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dttoor-frajme" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dttoor-frajme" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dttoor-frajme-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dttoor-frajme-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dttoor-frajme-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            
+            
+            <tr>
+                            <td class="element-name">LAMPARAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtoottr-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtoottr-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtoottr-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtoottr-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtoottr-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dtoottr-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">GUARDAESCOBAS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doorbbf-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doorbbf-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doorbbf-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doorbbf-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doorbbf-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doorbbf-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+<tr>
+                            <td class="element-name">LAVADERO</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-fdrame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-fdrame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-fdrame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-fdrame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-fdrame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="door-fdrame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">TENDEDERO</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dobor-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dobor-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dobor-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="dobor-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dobor-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="dobor-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+            <tr>
+                            <td class="element-name">CALENTADOR</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doaaaorm-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doaaaorm-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doaaaorm-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doaaaorm-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doaaaorm-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doaaaorm-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+
+            <tr>
+                            <td class="element-name">CONEXION LAVADORA</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doormxx-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doormxx-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doormxx-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doormxx-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doormxx-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doormxx-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+
+            <tr>
+                            <td class="element-name">OTROS</td>
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doorffm-frame" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doorffm-frame" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doorffm-frame" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="quantity">
+                                 <input type="number" min="0" value="1" style="width: 60px;">
+                             </td>
+                            <td class="observation-field">
+                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                            </td>
+
+                            
+                            <td class="status-options">
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="doorffm-frame-return" value="good"> BUENO
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doorffm-frame-return" value="regular"> REGULAR
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="doorffm-frame-return" value="bad"> MALO
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="quantity">
+                                <input type="number" min="0" value="1" style="width: 60px;">
+                            </td>
+                            <td class="observation-field">
+                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                </td>
+            </tr>
+
+                    </tbody>
+                </table>
+                <div class="photo-section">
+  <button class="btn-add-photo" onclick="document.getElementById('fileInput-clothing-area').click()">
+    <i class="fas fa-camera"></i> Añadir Fotos ZONA DE ROPAS
+  </button>
+    <input type="file" id="fileInput-clothing-area" accept="image/*" multiple style="display:none"
+         onchange="previewPhotos(event, 'clothing-area')">
+    <div class="photo-gallery" id="clothing-area-gallery"></div>
+    </div>
+</div>
+
+<script>
+// Variables globales
+let currentIndex = 0;
+let galleries = {}; // Para manejar galerías separadas por sección
+
+// Función para previsualizar fotos por galería
+function previewPhotos(event, galleryId) {
+  const gallery = document.getElementById(`${galleryId}-gallery`);
+  if (!gallery) return;
+
+  gallery.innerHTML = ""; // Limpiar galería antes de agregar nuevas
+  galleries[galleryId] = [];
+
+  Array.from(event.target.files).forEach((file, index) => {
+    if (file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        // Crear contenedor para la imagen y el botón de eliminar
+        const photoItem = document.createElement("div");
+        photoItem.className = "photo-item";
+
+        // Crear la imagen
+        const img = document.createElement("img");
+        img.src = e.target.result;
+        img.className = "thumb";
+        img.onclick = () => openModal(index, galleryId);
+
+        // Crear botón de eliminar
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className = "delete-photo";
+        deleteBtn.innerHTML = "×";
+        deleteBtn.onclick = () => {
+          // Eliminar la imagen de la galería y del array
+          photoItem.remove();
+          galleries[galleryId].splice(index, 1);
+          // Reindexar los índices para el modal (opcional, pero útil)
+          updateGalleryIndices(galleryId);
+        };
+
+        // Agregar imagen y botón al contenedor
+        photoItem.appendChild(img);
+        photoItem.appendChild(deleteBtn);
+        gallery.appendChild(photoItem);
+        galleries[galleryId].push(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+}
+
+// Función auxiliar para reindexar índices después de eliminar (evita errores en modal)
+function updateGalleryIndices(galleryId) {
+  const gallery = document.getElementById(`${galleryId}-gallery`);
+  if (!gallery) return;
+  const thumbs = gallery.querySelectorAll('.thumb');
+  thumbs.forEach((thumb, newIndex) => {
+    thumb.onclick = () => openModal(newIndex, galleryId);
+  });
+}
+// Función para abrir modal
+function openModal(index, galleryId) {
+  if (!galleries[galleryId] || galleries[galleryId].length === 0) return;
+  currentIndex = index;
+  const modal = document.getElementById("photoModal");
+  modal.style.display = "block";
+  modal.dataset.galleryId = galleryId;
+  document.getElementById("modalImage").src = galleries[galleryId][index];
+}
+
+// Función para cerrar modal
+function closeModal() {
+  document.getElementById("photoModal").style.display = "none";
+}
+
+// Función para cambiar foto en modal
+function changePhoto(direction) {
+  const modal = document.getElementById("photoModal");
+  const galleryId = modal.dataset.galleryId;
+  if (!galleryId || !galleries[galleryId]) return;
+
+  currentIndex += direction;
+  if (currentIndex < 0) currentIndex = galleries[galleryId].length - 1;
+  if (currentIndex >= galleries[galleryId].length) currentIndex = 0;
+
+  document.getElementById("modalImage").src = galleries[galleryId][currentIndex];
+}
+
+// Establecer fecha actual por defecto
+const currentDate = document.getElementById('current-date');
+if (currentDate) {
+  currentDate.valueAsDate = new Date();
+}
+
+// Mostrar/ocultar secciones
+function toggleSection(sectionId) {
+  const section = document.getElementById(sectionId);
+  if (!section) return;
+
+  const title = section.previousElementSibling;
+  const isVisible = getComputedStyle(section).display === "block";
+
+  if (isVisible) {
+    section.style.display = "none";
+    if (title) title.querySelector('span').textContent = '+';
+  } else {
+    section.style.display = "block";
+    if (title) title.querySelector('span').textContent = '-';
+  }
+  updateProgress();
+}
+
+// Actualizar progreso
+function updateProgress() {
+  const totalSections = document.querySelectorAll('.section-title').length;
+  let completedSections = 0;
+
+  document.querySelectorAll('.section-content').forEach(section => {
+    if (getComputedStyle(section).display === "block") {
+      completedSections++;
+    }
+  });
+
+  const progress = totalSections > 0 ? Math.round((completedSections / totalSections) * 100) : 0;
+
+  const progressBar = document.getElementById('inventory-progress');
+  const progressText = document.getElementById('progress-text');
+  if (progressBar) progressBar.style.width = `${progress}%`;
+  if (progressText) progressText.textContent = `Completado: ${progress}%`;
+}
+
+// Guardar inventario (con validación básica)
+function saveInventory() {
+  const agentName = document.getElementById('agent-name')?.value || "Agente desconocido";
+  const propertyAddress = document.getElementById('property-address')?.value;
+
+  if (!propertyAddress) {
+    alert('Por favor, ingrese la dirección de la propiedad.');
+    return;
+  }
+
+  alert(`Inventario de ${propertyAddress} guardado correctamente por ${agentName}.`);
+}
+
+// Imprimir inventario
+function printInventory() {
+  window.print();
+}
+
+// Inicializar: todas las secciones cerradas (ninguna abierta por defecto)
+document.querySelectorAll('.section-content').forEach(section => {
+  section.style.display = 'none';
+});
+// Si quieres abrir 'main-door' por defecto, descomenta la línea siguiente:
+// if (document.getElementById('main-door')) { toggleSection('main-door'); }
+
+// Event listeners para modal
+window.onclick = function(event) {
+  const modal = document.getElementById('photoModal');
+  if (event.target === modal) {
+    closeModal();
+  }
+};
+
+// Navegación con teclado
+document.addEventListener("keydown", function(event) {
+  const modal = document.getElementById("photoModal");
+  if (modal.style.display === "block") {
+    if (event.key === "ArrowRight") {
+      changePhoto(1);
+    } else if (event.key === "ArrowLeft") {
+      changePhoto(-1);
+    } else if (event.key === "Escape") {
+      closeModal();
+    }
+  }
+});
+</script>
+
+<!-- Modal para ver fotos -->
+<div id="photoModal" class="modal" data-gallery-id="">
+  <span class="close" onclick="closeModal()">&times;</span>
+  <span class="prev" onclick="changePhoto(-1)">&#10094;</span>
+  <img class="modal-content" id="modalImage">
+  <span class="next" onclick="changePhoto(1)">&#10095;</span>
+  <div id="photoCounter" class="counter"></div>
+</div>
