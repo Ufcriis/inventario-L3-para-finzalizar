@@ -10151,6 +10151,16 @@ input[type="text"]:focus, select:focus {
           alert("Error al cargar: " + error.message);
       }
   }
+  // Esto desbloquea TODAS las secciones para editar
+const allSections = document.querySelectorAll('.section-content'); // Todas las cajas
+allSections.forEach(section => {
+    section.style.display = 'block'; // Muestra la caja
+});
+// Y habilita todos los campos
+const allFields = document.querySelectorAll('input, select, textarea');
+allFields.forEach(field => {
+    field.disabled = false; // Quita el candado
+});
 
   // Haz accesibles las funciones
   window.guardarInventario = guardarInventario;
