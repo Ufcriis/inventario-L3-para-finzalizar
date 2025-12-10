@@ -637,7 +637,7 @@ input[type="text"]:focus, select:focus {
         <header>
             <div class="header-content">
                 <h1>📋 INVENTARIO DE INMUEBLE ARRENDADO</h1>
-                <img src="inmobiliaria.png" alt="Logo inmobiliaria l3" style="height: 60px;">
+                <img src="inmobiliaria.png" alt="Logo inmobiliaria l3" class="company-logo" style="height: 60px;">
             </div>
         </header>
         
@@ -772,10 +772,10 @@ input[type="text"]:focus, select:focus {
                                 </div>
                             </td>
                             <td class="quantity">
-                                 <input type="number" min="0" value="1" style="width: 60px;">
+                                    <input type="number" id="entrada-cantidad-entrega-1" min="0" value="1" style="width: 60px;">
                              </td>
                             <td class="observation-field">
-                                <textarea class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
+                                    <textarea id="entrada-observaciones-entrega-1" class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea>
                             </td>
 
                             
@@ -795,10 +795,10 @@ input[type="text"]:focus, select:focus {
 
 
                             <td class="quantity">
-                                <input type="number" min="0" value="1" style="width: 60px;">
+                                <input type="number" id="entrada-cantidad-entrega-2" min="0" value="1" style="width: 60px;">
                             </td>
                             <td class="observation-field">
-                    <textarea class="observation-input" placeholder="Observación restitución..."></textarea>
+                                    <textarea id="entrada-observaciones-entrega-2" class="observation-input" placeholder="Ej: Pintura descarapelada..."></textarea> 
                 </td>
             </tr>
             <tr>
@@ -10071,8 +10071,95 @@ input[type="text"]:focus, select:focus {
     <input type="file" id="fileInput-clothing-area" accept="image/*" multiple style="display:none"
          onchange="previewPhotos(event, 'clothing-area')">
     <div class="photo-gallery" id="clothing-area-gallery"></div>
+    
     </div>
 </div>
+
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+  import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";  // Agrega esto para Firestore
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyAbw1v9FOvPK_d6EB8kNdRRI3ZndImSUXM",
+    authDomain: "inventario-arrendamiento.firebaseapp.com",
+    projectId: "inventario-arrendamiento",
+    storageBucket: "inventario-arrendamiento.firebasestorage.app",
+    messagingSenderId: "783673128880",
+    appId: "1:783673128880:web:2be4dbfa23578c3b0b4875",
+    measurementId: "G-2L1W89B27D"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);  // Agrega esto para conectar a Firestore
+
+  // Función para guardar el inventario
+  async function guardarInventario(seccion) {
+      try {
+          const idInmueble = document.getElementById('inventory-id').value.replace(/\s+/g, '_');
+          if (!idInmueble) {
+              alert("Por favor, ingresa el número de contrato (inventory-id) antes de guardar.");
+              return;
+          }
+          const data = {
+              agentName: document.getElementById('agent-name').value || '',
+              inventoryId: document.getElementById('inventory-id').value || '',
+              tenantName: document.getElementById('tenant-name').value || '',
+              citizenId: document.getElementById('citizen-id').value || '',
+              phoneNumber: document.getElementById('phone-number').value || '',
+              landlordName: document.getElementById('landlord-name').value || '',
+              propertyAddress: document.getElementById('property-address').value || '',
+              propertyDetailType: document.getElementById('property-detail-type').value || '',
+          };
+          if (seccion === 'arrendado') {
+              // Agrega campos adicionales si los tienes
+          }
+          await setDoc(doc(db, "inventarios", idInmueble), data);
+          alert("Inventario guardado exitosamente en la nube.");
+      } catch (error) {
+          alert("Error al guardar: " + error.message);
+      }
+  }
+
+  // Función para cargar y editar el inventario
+  async function cargarInventario(seccion) {
+      try {
+          const rawId = document.getElementById('inventory-id').value.trim();
+          if (!rawId) {
+              alert("Por favor, ingresa el número de contrato (inventory-id) para cargar.");
+              return;
+          }
+          const idInmueble = rawId.replace(/\s+/g, '_');
+          const docSnap = await getDoc(doc(db, "inventarios", idInmueble));
+          if (docSnap.exists()) {
+              const data = docSnap.data();
+              document.getElementById('agent-name').value = data.agentName || '';
+              document.getElementById('inventory-id').value = data.inventoryId || '';
+              document.getElementById('tenant-name').value = data.tenantName || '';
+              document.getElementById('citizen-id').value = data.citizenId || '';
+              document.getElementById('phone-number').value = data.phoneNumber || '';
+              document.getElementById('landlord-name').value = data.landlordName || '';
+              document.getElementById('property-address').value = data.propertyAddress || '';
+              document.getElementById('property-detail-type').value = data.propertyDetailType || '';
+              alert("Inventario cargado para editar.");
+          } else {
+              alert("No hay inventario guardado para este contrato. Verifica el ID.");
+          }
+      } catch (error) {
+          alert("Error al cargar: " + error.message);
+      }
+  }
+
+  // Haz accesibles las funciones
+  window.guardarInventario = guardarInventario;
+  window.cargarInventario = cargarInventario;
+</script>
+
+<!-- Botones para guardar/cargar -->
+<button type="button" onclick="guardarInventario('vacio')">Guardar Inventario</button>
+<button type="button" onclick="cargarInventario('vacio')">Cargar para Editar</button>
 
 <script>
 // Variables globales
@@ -10204,23 +10291,6 @@ function updateProgress() {
   if (progressText) progressText.textContent = `Completado: ${progress}%`;
 }
 
-// Guardar inventario (con validación básica)
-function saveInventory() {
-  const agentName = document.getElementById('agent-name')?.value || "Agente desconocido";
-  const propertyAddress = document.getElementById('property-address')?.value;
-
-  if (!propertyAddress) {
-    alert('Por favor, ingrese la dirección de la propiedad.');
-    return;
-  }
-
-  alert(`Inventario de ${propertyAddress} guardado correctamente por ${agentName}.`);
-}
-
-// Imprimir inventario
-function printInventory() {
-  window.print();
-}
 
 // Inicializar: todas las secciones cerradas (ninguna abierta por defecto)
 document.querySelectorAll('.section-content').forEach(section => {
@@ -10260,9 +10330,3 @@ document.addEventListener("keydown", function(event) {
   <span class="next" onclick="changePhoto(1)">&#10095;</span>
   <div id="photoCounter" class="counter"></div>
 </div>
-
-
-
-
-
-
